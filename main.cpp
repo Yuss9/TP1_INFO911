@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 using namespace cv;
@@ -59,8 +60,6 @@ cv::Mat afficheHistogrammes(const std::vector<double>& h_I, const std::vector<do
 }
 
 
-
-
 /* 
 Affiche un seule histogramme
 */
@@ -106,18 +105,50 @@ Mat egaliserHistogramme(const Mat& image, const std::vector<double>& H_I) {
 ##############################################################################
 */
 
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        cout << "Usage: " << argv[0] << " <nom-fichier-image>" << endl;
-        return 1;
-    }
+void gestionColor(String filename){
+    Mat f = imread(filename);
 
-    Mat f = imread(argv[1], IMREAD_GRAYSCALE); // Chargez l'image en niveaux de gris
+    Mat e;
+    cv::cvtColor(f,e, COLOR_BGR2HSV);
 
-    if (f.empty()) {
-        cout << "Impossible de charger l'image " << argv[1] << endl;
-        return 1;
-    }
+    std::vector<Mat> HSV;
+    cv::split(e,HSV);
+
+    std::vector<double> h_I = histogramme(HSV[2]); 
+    std::vector<double> H_I = histogramme_cumule(h_I); 
+    
+    Mat egalisee = egaliserHistogramme(HSV[2], H_I); // egalise
+    
+    std::vector<Mat> final_channels = {HSV[0],HSV[1], egalisee};
+    Mat merged;
+    cv::merge(final_channels,merged);
+    cv::cvtColor(merged,merged, COLOR_HSV2BGR );
+
+    namedWindow("Image original");
+    imshow("Image original", f);
+
+    Mat hist_image = afficheHistogrammes(h_I, H_I);
+    namedWindow("Histogrammes");
+    imshow("Histogrammes", hist_image);
+
+    namedWindow("Image final");
+    imshow("Image final", merged);
+
+    std::vector<double> h_I_merged = histogramme(merged); 
+    std::vector<double> H_I_merged = histogramme_cumule(h_I_merged); 
+
+    Mat hist_image_merged = afficheHistogrammes(h_I_merged, H_I_merged);
+    imshow("Histogrammes merged ", hist_image_merged);
+
+    waitKey(0);
+}
+
+/* 
+##############################################################################
+*/
+
+void egaliseImageGrey(String filename) {
+    Mat f = imread(filename, IMREAD_GRAYSCALE); // Chargez l'image en niveaux de gris
 
     std::vector<double> h_I = histogramme(f); // Calcul de l'histogramme
     std::vector<double> H_I = histogramme_cumule(h_I); // Calcul de l'histogramme cumulé
@@ -131,13 +162,25 @@ int main(int argc, char* argv[]) {
     imshow("Image egalisee", egalisee);
 
     std::vector<double> h_egalisee = histogramme(egalisee);
-    std::vector<double> H_egalisee = histogramme_cumule(h_egalisee);
-
-    Mat hist_egalisee = afficheHistogrammes(h_egalisee, H_egalisee);
-    namedWindow("Histogrammes egalises");
-    imshow("Histogrammes egalises", hist_egalisee);
 
     waitKey(0);
+}
+
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        cout << "Usage: " << argv[0] << " <nom-fichier-image>" << endl;
+        return 1;
+    }
+
+    Mat f = imread(argv[1]);
+
+    if (f.empty()) {
+        cout << "Impossible de charger l'image " << argv[1] << endl;
+        return 1;
+    }
+
+    gestionColor(argv[1]);
 
     return 0;
+
 }
