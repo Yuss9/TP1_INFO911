@@ -105,6 +105,30 @@ Mat egaliserHistogramme(const Mat& image, const std::vector<double>& H_I) {
 ##############################################################################
 */
 
+void egaliseImageGrey(String filename) {
+    Mat f = imread(filename, IMREAD_GRAYSCALE); // Chargez l'image en niveaux de gris
+
+    std::vector<double> h_I = histogramme(f); // Calcul de l'histogramme
+    std::vector<double> H_I = histogramme_cumule(h_I); // Calcul de l'histogramme cumulé
+
+    Mat hist_image = afficheHistogrammes(h_I, H_I);
+    namedWindow("Histogrammes");
+    imshow("Histogrammes", hist_image);
+
+    Mat egalisee = egaliserHistogramme(f, H_I);
+    namedWindow("Image egalisee");
+    imshow("Image egalisee", egalisee);
+
+    std::vector<double> h_egalisee = histogramme(egalisee);
+
+    waitKey(0);
+}
+
+
+/* 
+##############################################################################
+*/
+
 void gestionColor(String filename){
     Mat f = imread(filename);
 
@@ -134,7 +158,7 @@ void gestionColor(String filename){
     namedWindow("Image final");
     imshow("Image final", merged);
 
-    std::vector<double> h_I_merged = histogramme(merged); 
+    std::vector<double> h_I_merged = histogramme(egalisee); 
     std::vector<double> H_I_merged = histogramme_cumule(h_I_merged); 
 
     Mat hist_image_merged = afficheHistogrammes(h_I_merged, H_I_merged);
@@ -146,25 +170,6 @@ void gestionColor(String filename){
 /* 
 ##############################################################################
 */
-
-void egaliseImageGrey(String filename) {
-    Mat f = imread(filename, IMREAD_GRAYSCALE); // Chargez l'image en niveaux de gris
-
-    std::vector<double> h_I = histogramme(f); // Calcul de l'histogramme
-    std::vector<double> H_I = histogramme_cumule(h_I); // Calcul de l'histogramme cumulé
-
-    Mat hist_image = afficheHistogrammes(h_I, H_I);
-    namedWindow("Histogrammes");
-    imshow("Histogrammes", hist_image);
-
-    Mat egalisee = egaliserHistogramme(f, H_I);
-    namedWindow("Image egalisee");
-    imshow("Image egalisee", egalisee);
-
-    std::vector<double> h_egalisee = histogramme(egalisee);
-
-    waitKey(0);
-}
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
