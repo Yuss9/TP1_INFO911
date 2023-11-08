@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "*.jsx": "javascriptreact",
+        "__node_handle": "cpp",
+        "__split_buffer": "cpp",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp"
+    }
+}

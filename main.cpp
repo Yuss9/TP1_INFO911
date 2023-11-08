@@ -1,5 +1,6 @@
 #include <iostream>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp> // Ajoutez cette ligne pour utiliser cvtColor
 using namespace cv;
 using namespace std;
 
@@ -19,7 +20,13 @@ int main(int argc, char* argv[])
     cout << "Impossible de charger l'image " << argv[1] << endl;
     return 1;
   }
-  imshow("TP1", f);                  // l'affiche dans la fenêtre
+
+  // Vérifiez si l'image est en niveaux de gris, sinon convertissez-la
+  if (f.channels() > 1) {
+    cvtColor(f, f, COLOR_BGR2GRAY);
+  }
+
+  imshow("TP1", f);                  // affiche l'image dans la fenêtre
 
   while (waitKey(50) < 0) {
     if (value != old_value) {
