@@ -6,6 +6,7 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 SET( MAIN_EXEC
      main 
+     tramage
      # vous pouvez ajouter d'autres programmes ici
      )
 

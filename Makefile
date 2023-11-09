@@ -129,6 +129,19 @@ main/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
 .PHONY : main/fast
 
+#=============================================================================
+# Target rules for targets named tramage
+
+# Build rule for target.
+tramage: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tramage
+.PHONY : tramage
+
+# fast build rule for target.
+tramage/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tramage.dir/build.make CMakeFiles/tramage.dir/build
+.PHONY : tramage/fast
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -153,6 +166,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+tramage.o: tramage.cpp.o
+.PHONY : tramage.o
+
+# target to build an object file
+tramage.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tramage.dir/build.make CMakeFiles/tramage.dir/tramage.cpp.o
+.PHONY : tramage.cpp.o
+
+tramage.i: tramage.cpp.i
+.PHONY : tramage.i
+
+# target to preprocess a source file
+tramage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tramage.dir/build.make CMakeFiles/tramage.dir/tramage.cpp.i
+.PHONY : tramage.cpp.i
+
+tramage.s: tramage.cpp.s
+.PHONY : tramage.s
+
+# target to generate assembly for a file
+tramage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tramage.dir/build.make CMakeFiles/tramage.dir/tramage.cpp.s
+.PHONY : tramage.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -162,9 +199,13 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... main"
+	@echo "... tramage"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... tramage.o"
+	@echo "... tramage.i"
+	@echo "... tramage.s"
 .PHONY : help
 
 
