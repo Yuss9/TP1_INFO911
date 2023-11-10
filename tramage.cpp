@@ -39,6 +39,28 @@ cv::Mat tramage_floyd_steinberg( cv::Mat input ){
   return output;
 }
 
+void test_tramage_floyd_steinberg(String filename){
+    Mat f = imread(filename, IMREAD_GRAYSCALE);
+
+    if (f.empty()) {
+        cout << "Impossible de charger l'image " << filename << endl;
+        return;
+    }
+
+
+    namedWindow("Image initial");
+    imshow("Image initial", f);
+
+
+    Mat final_image = tramage_floyd_steinberg(f);
+    namedWindow("Image finale");
+    imshow("Image finale", final_image);
+
+
+    waitKey(0);
+
+}
+
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -53,17 +75,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    namedWindow("Image initial");
-    imshow("Image initial", f);
-
-
-    Mat final_image = tramage_floyd_steinberg(f);
-    namedWindow("Image finale");
-    imshow("Image finale", final_image);
-
-
-    waitKey(0);
+    test_tramage_floyd_steinberg(argv[1]);
 
     return 0;
-
 }
