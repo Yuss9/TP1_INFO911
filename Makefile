@@ -142,6 +142,19 @@ tramage/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tramage.dir/build.make CMakeFiles/tramage.dir/build
 .PHONY : tramage/fast
 
+#=============================================================================
+# Target rules for targets named video
+
+# Build rule for target.
+video: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 video
+.PHONY : video
+
+# fast build rule for target.
+video/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/video.dir/build.make CMakeFiles/video.dir/build
+.PHONY : video/fast
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -190,6 +203,30 @@ tramage.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tramage.dir/build.make CMakeFiles/tramage.dir/tramage.cpp.s
 .PHONY : tramage.cpp.s
 
+video.o: video.cpp.o
+.PHONY : video.o
+
+# target to build an object file
+video.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/video.dir/build.make CMakeFiles/video.dir/video.cpp.o
+.PHONY : video.cpp.o
+
+video.i: video.cpp.i
+.PHONY : video.i
+
+# target to preprocess a source file
+video.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/video.dir/build.make CMakeFiles/video.dir/video.cpp.i
+.PHONY : video.cpp.i
+
+video.s: video.cpp.s
+.PHONY : video.s
+
+# target to generate assembly for a file
+video.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/video.dir/build.make CMakeFiles/video.dir/video.cpp.s
+.PHONY : video.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -200,12 +237,16 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... main"
 	@echo "... tramage"
+	@echo "... video"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
 	@echo "... tramage.o"
 	@echo "... tramage.i"
 	@echo "... tramage.s"
+	@echo "... video.o"
+	@echo "... video.i"
+	@echo "... video.s"
 .PHONY : help
 
 
