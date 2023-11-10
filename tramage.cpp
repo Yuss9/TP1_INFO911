@@ -121,6 +121,84 @@ void test_tramage_floyd_steinberg_color(String filename){
 #################################################################### 
 */
 
+float distance_color_l2(Vec3f bgr1, Vec3f bgr2) {
+    return sqrt(pow(bgr1[0] - bgr2[0], 2) + pow(bgr1[1] - bgr2[1], 2) + pow(bgr1[2] - bgr2[2], 2));
+}
+
+int best_color(Vec3f bgr, vector<Vec3f> colors) {
+    int index = 0;
+    float minDist = distance_color_l2(bgr, colors[0]);
+
+    for (int i = 1; i < colors.size(); i++) {
+        float dist = distance_color_l2(bgr, colors[i]);
+        if (dist < minDist) {
+            minDist = dist;
+            index = i;
+        }
+    }
+
+    return index;
+}
+
+Vec3f error_color(Vec3f bgr1, Vec3f bgr2) {
+    return Vec3f(bgr1[0] - bgr2[0], bgr1[1] - bgr2[1], bgr1[2] - bgr2[2]);
+}
+
+cv::Mat tramage_floyd_steinberg_final(cv::Mat input, std::vector<cv::Vec3f> colors) {
+    cv::Mat fs;
+    input.convertTo(fs, CV_32FC3, 1 / 255.0);
+
+    int rowSize = fs.rows;
+    int columnSize = fs.cols;
+
+    for (int row = 0; row < rowSize; row++) {
+        for (int col = 0; col < columnSize; col++) {
+            Vec3f c = fs.at<Vec3f>(row, col);
+            int i = best_color(c, colors);
+            Vec3f e = error_color(c, colors[i]);
+
+            fs.at<Vec3f>(row, col) = colors[i];
+
+            if (col + 1 < columnSize) fs.at<Vec3f>(row, col + 1) += e * (7.0 / 16.0);  // Augmentation ici
+            if (row + 1 < rowSize) {
+                if (col - 1 >= 0) fs.at<Vec3f>(row + 1, col - 1) += e * (1.0 / 16.0);  // Augmentation ici
+                fs.at<Vec3f>(row + 1, col) += e * (5.0 / 16.0);  // Augmentation ici
+                if (col + 1 < columnSize) fs.at<Vec3f>(row + 1, col + 1) += e * (3.0 / 16.0);  // Augmentation ici
+            }
+        }
+    }
+
+    cv::Mat output;
+    fs.convertTo(output, CV_8UC3, 255.0);
+
+    return output;
+}
+
+void test_tramage_floyd_steinberg_final(String filename){
+    Mat f = imread(filename);
+
+    // Choix des couleurs CMYK
+    vector<Vec3f> colors = {Vec3f(1.0, 1.0, 0.0), Vec3f(0.0, 1.0, 1.0), Vec3f(1.0, 0.0, 1.0), Vec3f(0.0, 0.0, 0.0)};
+
+    namedWindow("Image initial");
+    imshow("Image initial", f);
+
+    Mat final_image = tramage_floyd_steinberg_final(f, colors);
+    namedWindow("Image tramee CMYK");
+    imshow("Image tramee CMYK", final_image);
+
+    waitKey(0);
+
+}
+
+
+
+/*
+#################################################################### 
+*/
+
+
+
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -135,7 +213,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    test_tramage_floyd_steinberg_color(argv[1]);
+    test_tramage_floyd_steinberg_final(argv[1]);
 
     return 0;
 }
