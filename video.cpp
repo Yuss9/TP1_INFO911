@@ -7,6 +7,32 @@ using namespace cv;
 using namespace std;
 
 
+
+// Fonction pour calculer l'histogramme
+std::vector<double> histogramme(Mat image) {
+    std::vector<double> hist(256, 0);
+    for (int i = 0; i < image.rows; i++) {
+        for (int j = 0; j < image.cols; j++) {
+            int pixel_value = static_cast<int>(image.at<uchar>(i, j));
+            hist[pixel_value]++;
+        }
+    }
+    return hist;
+}
+
+// Fonction pour calculer l'histogramme cumulé
+std::vector<double> histogramme_cumule(const std::vector<double>& h_I) {
+    std::vector<double> H_I(256, 0);
+    H_I[0] = h_I[0];
+    for (int i = 1; i < 256; i++) {
+        H_I[i] = H_I[i - 1] + h_I[i];
+    }
+    return H_I;
+}
+
+
+
+
 cv::Mat tramage_floyd_steinberg( cv::Mat input ){
   int rowSize = input.rows;
   int columnSize = input.cols;
@@ -122,6 +148,19 @@ cv::Mat tramage_floyd_steinberg_final(cv::Mat input, std::vector<cv::Vec3f> colo
     return output;
 }
 
+Mat egaliserHistogramme(const Mat& image, const std::vector<double>& H_I) {
+    Mat resultat = image.clone();
+    int total_pixels = image.rows * image.cols;
+    for (int i = 0; i < image.rows; i++) {
+        for (int j = 0; j < image.cols; j++) {
+            int pixel_value = static_cast<int>(image.at<uchar>(i, j));
+            int nouvelle_valeur = static_cast<int>(255.0 * H_I[pixel_value] / total_pixels);
+            resultat.at<uchar>(i, j) = nouvelle_valeur;
+        }
+    }
+    return resultat;
+}
+
 
 int main(int, char**) {
     VideoCapture cap(0);
@@ -164,22 +203,30 @@ int main(int, char**) {
 
         if (equalizeImage) {
             if (processColor) {
-                vector<Mat> channels;
-                split(frame, channels);
+                // avec color
+                // complete ici volo
+                Mat e;
+                cv::cvtColor(frame,e, COLOR_BGR2HSV);
 
-                for (int i = 0; i < channels.size(); i++) {
-                    equalizeHist(channels[i], channels[i]);
-                }
+                std::vector<Mat> HSV;
+                cv::split(e,HSV);
 
-                merge(channels, frame);
+                std::vector<double> h_I = histogramme(HSV[2]); 
+                std::vector<double> H_I = histogramme_cumule(h_I); 
+
+                Mat egalisee = egaliserHistogramme(HSV[2], H_I); // egalise
+
+                std::vector<Mat> final_channels = {HSV[0],HSV[1], egalisee};
+
+                cv::merge(final_channels,frame);
+                cv::cvtColor(frame,frame, COLOR_HSV2BGR );
             } else {
-                equalizeHist(frame, frame);
+                // sans color 
+                std::vector<double> h_I = histogramme(frame); 
+                std::vector<double> H_I = histogramme_cumule(h_I); 
+                frame = egaliserHistogramme(frame, H_I);
             }
         }
-
-        // si noir et blanc on fait tramage_floyd_steinberg ici on donne frame
-        // si color on fait tramage_floyd_steinberg_color ici on donne frame
-        // si color et on veut final  on fait tramage_floyd_steinberg_color_final ici on donne frame et COLORS
         
         if (tramageImage && !processColor) {
             processedFrame = tramage_floyd_steinberg(frame);
